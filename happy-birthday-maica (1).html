@@ -281,7 +281,7 @@
       <div class="tap-message" id="tapMessage">I'm serious. Don't do it.</div>
       <div class="final-reveal" id="finalReveal">
         <div class="final-line">Okay, NOW you can go enjoy your birthday. 🎂</div>
-        <div class="final-line">Happy Birthday, Maica. Love you lots. 🎉</div>
+        <div class="final-line">Happy Birthday, Maica. You're one of the best people I could ever ask for. 🎉</div>
         <div class="final-hashtag">#plsdontflashmeagaininvolleyball</div>
       </div>
     </div>
@@ -401,21 +401,35 @@
   const bgMusic = document.getElementById('bgMusic');
   const eggTooltip = document.getElementById('eggTooltip');
 
-  // EDIT ME: this is the real letter. Swap in your own words and easter-egg jokes.
-  // Plain strings = normal words. {egg:true, text:'...', joke:'...'} = clickable easter egg.
-  const letterTokens = [
-    "Maica,", "if", "you're", "reading", "this,", "you", "already", "survived", "the",
-    { egg: true, text: "riddle,", joke: "yes, that was a trap. no regrets." },
-    "the", "flip", "cards,", "and", "my", "questionable", "sense", "of", "humor.",
-    "That's", "basically", "a", "full", "workout.", "\n\n",
-    "But", "for", "real", "for", "a", "second", "\u2014", "thank", "you", "for", "being",
-    { egg: true, text: "chaotic", joke: "affectionate term, please don't sue" },
-    "in", "the", "best", "way,", "for", "answering", "my", "3am", "texts,", "and", "for",
-    "somehow", "putting", "up", "with", "me", "this", "long.", "\n\n",
-    "You", "deserve", "a", "birthday", "as", "ridiculous", "and", "wonderful", "as", "you", "are.",
-    "Happy", "birthday,", "Maica.", "I", "hope", "this", "year", "gives", "you", "everything",
-    "you're", "chasing", "\u2014", "and", "a", "few", "things", "you", "didn't", "know", "you", "wanted."
-  ];
+  // EDIT ME: this is the real letter. Just write it like a normal letter below.
+  // Leave a blank line between paragraphs.
+  // To make a word clickable with a little joke popup, wrap it like this:
+  // {{word|the joke text that pops up}}
+  const letterRaw = `Maica, if you're reading this, you already survived the {{riddle|yes, that was a trap. no regrets.}}, the flip cards, and my questionable sense of humor. Hopefully, this didn't take too much of your braincells.
+
+But for real for a second, thank you for being {{chaotic|affectionate term, please don't sue}} in the best way, for answering my rant texts, and for somehow putting up with me this long.
+
+You deserve a birthday as ridiculous and wonderful as you are. Happy birthday, Maica. I hope this year gives you everything you're chasing — and a few things you didn't know you wanted. And no, I did not use AI for anything. (PS: If you haven't figured it out, you can click on the highlighted text)`;
+
+  function parseLetter(raw) {
+    const paragraphs = raw.trim().split(/\n\s*\n/);
+    const tokens = [];
+    const eggPattern = /\{\{([^|}]+)\|([^}]+)\}\}|(\S+)/g;
+    paragraphs.forEach((para, pi) => {
+      let match;
+      while ((match = eggPattern.exec(para)) !== null) {
+        if (match[1] !== undefined) {
+          tokens.push({ egg: true, text: match[1], joke: match[2] });
+        } else {
+          tokens.push(match[3]);
+        }
+      }
+      if (pi < paragraphs.length - 1) tokens.push('\n\n');
+    });
+    return tokens;
+  }
+
+  const letterTokens = parseLetter(letterRaw);
 
   let tokenIndex = 0;
   function typeNext() {
